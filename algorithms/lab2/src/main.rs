@@ -1,10 +1,16 @@
-fn print_matrix(message: &str, matrix: &Vec<Vec<i32>>, n: usize) { println!("{}", message); for i in 0..n { println!("{:?}", matrix[i]) } }
-
+fn print_matrix(message: &str, matrix: &Vec<Vec<i32>>, n: usize) {
+    println!("{}", message);
+    for i in 0..n {
+        println!("{:?}", matrix[i])
+    }
+}
 
 fn get_path(matrix_p: &Vec<Vec<i32>>, mut start: usize, end: usize) -> Vec<i32> {
     let mut path = [].to_vec();
     loop {
-        if start as i32 == -1 {break;}
+        if start as i32 == -1 {
+            break;
+        }
         path.push(start as i32);
         start = matrix_p[start][end] as usize;
     }
@@ -18,7 +24,7 @@ fn main() {
         vec![7, 0, 0, 0, 10],
         vec![0, 7, 0, 0, 0],
         vec![0, 0, 3, 0, 4],
-        vec![0, 0, 1, 0, 0]
+        vec![0, 0, 1, 0, 0],
     ];
     let n = m.len();
 
@@ -30,22 +36,35 @@ fn main() {
     let mut p = vec![vec![-1; n]; n];
 
     // заполняем пути "бесконечностью"
-    (0..n).for_each(|i: usize| (0..n).for_each(|j: usize|
-        if i != j && wt[i][j] == 0 { wt[i][j] = i32::MAX }
-    ));
+    (0..n).for_each(|i: usize| {
+        (0..n).for_each(|j: usize| {
+            if i != j && wt[i][j] == 0 {
+                wt[i][j] = i32::MAX
+            }
+        })
+    });
 
-    (0..n).for_each(|k: usize| (0..n).for_each(|i: usize| (0..n).for_each(|j: usize | {
-        w[i][j] = (w[i][j] > 0 || (w[i][k] > 0 && w[k][j] > 0)) as i32;
-        if wt[i][k] != i32::MAX && wt[k][j] != i32::MAX && (wt[i][j] > wt[i][k] + wt[k][j]) {
-            wt[i][j] = wt[i][k] + wt[k][j];
-            p[i][j] = k as i32;
-        }
-    })));
-    
+    (0..n).for_each(|k: usize| {
+        (0..n).for_each(|i: usize| {
+            (0..n).for_each(|j: usize| {
+                w[i][j] = (w[i][j] > 0 || (w[i][k] > 0 && w[k][j] > 0)) as i32;
+                if wt[i][k] != i32::MAX && wt[k][j] != i32::MAX && (wt[i][j] > wt[i][k] + wt[k][j])
+                {
+                    wt[i][j] = wt[i][k] + wt[k][j];
+                    p[i][j] = k as i32;
+                }
+            })
+        })
+    });
+
     // убираем "бесконечность" и ставим -1
-    (0..n).for_each(|i: usize| (0..n).for_each(|j: usize|
-        if wt[i][j] == i32::MAX { wt[i][j] = -1 }
-    ));
+    (0..n).for_each(|i: usize| {
+        (0..n).for_each(|j: usize| {
+            if wt[i][j] == i32::MAX {
+                wt[i][j] = -1
+            }
+        })
+    });
 
     print_matrix("Main matrix:", &m, n);
     print_matrix("Warshell matrix:", &w, n);
@@ -57,13 +76,19 @@ fn main() {
     let mut e = vec![0; n];
     for i in 0..n {
         for j in 0..n {
-            if i != j { e[i] += 1; }
+            if i != j {
+                e[i] += 1;
+            }
         }
     }
     let r = e.iter().min().unwrap();
     let d = e.iter().max().unwrap();
     let mut mids = vec![0; 0];
-    (0..n).for_each(|i| if &e[i] == r {mids.push(i)});
+    (0..n).for_each(|i| {
+        if &e[i] == r {
+            mids.push(i)
+        }
+    });
     println!("R={}\nD={}\nmid's={:?}\ne={:?}", r, d, mids, e);
 
     println!("");
