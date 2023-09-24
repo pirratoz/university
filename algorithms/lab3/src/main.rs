@@ -43,55 +43,38 @@ fn dijkstra(matrix: Vec<Vec<i32>>, start: usize, end: usize) {
 }
 
 
-fn bellman_ford(matrix: Vec<Vec<i32>>, start: usize, _end: usize) {
-    #[derive(Debug)]
-    struct Edge {
-        a: i32,
-        b: i32,
-        c: i32
-    }
-    let count_vertices = matrix.len();
-    let mut d: Vec<usize> = vec![usize::MAX; count_vertices];
-    let mut e: Vec<Edge> = vec![];
-    let mut p: Vec<i32> = vec![-1; count_vertices];
-
+fn bellman_ford(matrix: Vec<Vec<i32>>, start: usize, mut end: usize) {
+    let mut work = true;
+    let n = matrix.len();
+    let mut d = vec![i32::MAX; n];
+    let mut p = vec![-1; n];
+    
     d[start] = 0;
 
-    (0..count_vertices).for_each(|i| (0..count_vertices).for_each(|j| {
-        if matrix[i][j] != 0 { e.push(Edge{a: i as i32, b: j as i32, c: matrix[i][j]}); }
-    }));
-
-    loop {
-        let mut is_end = false;
-
-        for j in 0..e.len() {
-            let k = e[j].c as usize;
-            let ki = e[j].a as usize;
-            let kio = e[j].b as usize;
-            if d[ki] < usize::MAX {
-                if d[kio] > d[ki] + k {
-                    d[kio] = d[ki] + k;
-                    is_end = true;
-                    p[kio] = ki as i32;
-                }
+    while work {
+        work = false;
+        (0..n).for_each(|i| (0..n).for_each(|j|{
+            if matrix[i][j] != 0 && d[i] < i32::MAX && d[j] > d[i] + matrix[i][j] {
+                d[j] = d[i] + matrix[i][j];
+                p[j] = i as i32;
+                work = true;
             }
-        }
-        if !is_end {break;}
+        }));
     }
+
     println!("Мин маршрут до каждой вершины: {:?}", d);
 
-    let s = start.clone();
-    let mut _e = _end.clone();
-
-    for i in 0..count_vertices {
-        if i == s { continue; }
-        _e = i;
-        print!("{} ", i);
-        while _e != s {
-            _e = p[_e] as usize;
-            print!("{} ", _e)
+    for i in 0..n {
+        if i == start { continue; }
+        let mut path: Vec<i32> = vec![];
+        end = i;
+        path.push(i as i32);
+        while end != start {
+            end = p[end] as usize;
+            path.push(end as i32);
         }
-        println!("");
+        path.reverse();
+        println!("{:?} - {}", path, d[i]);
     }
 }
 
@@ -110,7 +93,6 @@ fn main() {
     let _end = 4;
     println!("Дейкстра: ");
     dijkstra(_m.clone(), _start, _end);
-    println!("Беллман: ");
+    println!("\nБеллман-Форд: ");
     bellman_ford(_m.clone(), _start, _end);
 }
-
