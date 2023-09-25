@@ -70,7 +70,7 @@ fn main() {
 
     dfs(&graph, &mut visited, start, end, &mut count_path);
 
-    println!("Найдено: {} маршрутов\n", count_path);
+    println!("Количество маршрутов: {}\n", count_path);
 
     let distance = bfs(&graph, start, _m.len());
     println!("Длины маршрутов: {:?}", distance);
