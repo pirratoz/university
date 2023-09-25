@@ -1,8 +1,11 @@
 mod edges;
+use std::collections::VecDeque;
 use edges::{
     Edges,
     get_edges
 };
+
+const INF: i32 = 100_000; 
 
 
 fn dfs(graph: & Edges, viseted: &mut Vec<usize>, start: usize, end: usize, count_path: &mut u32){
@@ -30,6 +33,28 @@ fn dfs(graph: & Edges, viseted: &mut Vec<usize>, start: usize, end: usize, count
 }
 
 
+fn bfs(graph: & Edges, start: usize, n: usize) -> Vec<i32> {
+    let mut distance = vec![INF; n];
+    let mut queue: VecDeque<usize> = VecDeque::new();
+
+    distance[start] = 0;
+    queue.push_back(start);
+
+    while !queue.is_empty() {
+        let v = queue.pop_front().unwrap();
+        
+        if !graph.contains_key(&v) { continue; }
+
+        for i in graph[&v].clone() {
+            if distance[i.v] > distance[v] + 1 {
+                distance[i.v] = distance[v] + 1;
+                queue.push_back(i.v);
+            }
+        }
+    }
+    return distance;
+}
+
 fn main() {
     let _m = vec![
         vec![0, 1, 1, 1, 1],
@@ -42,10 +67,13 @@ fn main() {
     let mut count_path = 0;
 
     let graph: Edges = get_edges(_m.clone());
-    let start = 0;
+    let start = 1;
     let end = 2;
 
     dfs(&graph, &mut visited, start, end, &mut count_path);
 
     println!("Найдено: {} маршрутов\n", count_path);
+
+    let distance = bfs(&graph, start, _m.len());
+    println!("Длины маршрутов: {:?}", distance);
 }
