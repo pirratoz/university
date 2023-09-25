@@ -43,6 +43,42 @@ fn dijkstra(matrix: Vec<Vec<i32>>, start: usize, end: usize) {
 }
 
 
+fn bellman_ford(matrix: Vec<Vec<i32>>, start: usize, mut end: usize) {
+    let mut work = true;
+    let n = matrix.len();
+    let mut d = vec![i32::MAX; n];
+    let mut p = vec![-1; n];
+    
+    d[start] = 0;
+
+    while work {
+        work = false;
+        (0..n).for_each(|i| (0..n).for_each(|j|{
+            if matrix[i][j] != 0 && d[i] < i32::MAX && d[j] > d[i] + matrix[i][j] {
+                d[j] = d[i] + matrix[i][j];
+                p[j] = i as i32;
+                work = true;
+            }
+        }));
+    }
+
+    println!("Мин маршрут до каждой вершины: {:?}", d);
+
+    for i in 0..n {
+        if i == start { continue; }
+        let mut path: Vec<i32> = vec![];
+        end = i;
+        path.push(i as i32);
+        while end != start {
+            end = p[end] as usize;
+            path.push(end as i32);
+        }
+        path.reverse();
+        println!("{:?} - {}", path, d[i]);
+    }
+}
+
+
 fn main() {
     if false { test_run_all(); return ; }
     let _m = vec![
@@ -54,7 +90,9 @@ fn main() {
     ];
 
     let _start = 3;
-    let _end = 4; 
+    let _end = 4;
+    println!("Дейкстра: ");
     dijkstra(_m.clone(), _start, _end);
+    println!("\nБеллман-Форд: ");
+    bellman_ford(_m.clone(), _start, _end);
 }
-
