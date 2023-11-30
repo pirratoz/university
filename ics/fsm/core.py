@@ -38,9 +38,9 @@ class FiniteStateMachine:
             I = self.coding_machine.I,
             L = self.coding_machine.L,
             N = self.coding_machine.N,
-            IQ = self.coding_machine.vector_states,
-            LX = self.coding_machine.vector_inputs,
-            NY = self.coding_machine.vector_exits
+            IQ = self.coding_machine.vectors.states_string,
+            LX = self.coding_machine.vectors.inputs_string,
+            NY = self.coding_machine.vectors.exits_string
         )
 
 
@@ -60,6 +60,6 @@ fsm = FiniteStateMachine(
 )
 
 print(fsm)
-print(fsm.coding_machine.v_state)
-print(fsm.coding_machine.v_exits)
-print(fsm.coding_machine.v_inputs) 
+print(fsm.coding_machine.vectors.states)
+print(fsm.coding_machine.vectors.exits)
+print(fsm.coding_machine.vectors.inputs) 
