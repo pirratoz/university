@@ -16,7 +16,7 @@ class FiniteStateMachine:
         self.inputs = inputs
         self.trigger = trigger
 
-        self.coding_machine = CodingMachine(
+        self.code_machine = CodingMachine(
             self.get_unique_value_from_list(self.states),
             self.get_unique_value_from_list(self.exits),
             self.inputs
@@ -32,15 +32,15 @@ class FiniteStateMachine:
 
     def __str__(self) -> str:
         return forms.fsm_str.format(
-            A = self.coding_machine.A,
-            W = self.coding_machine.W,
-            Z = self.coding_machine.Z,
-            I = self.coding_machine.I,
-            L = self.coding_machine.L,
-            N = self.coding_machine.N,
-            IQ = self.coding_machine.vectors.states_string,
-            LX = self.coding_machine.vectors.inputs_string,
-            NY = self.coding_machine.vectors.exits_string
+            A = self.code_machine.states.values,
+            W = self.code_machine.exits.values,
+            Z = self.code_machine.inputs.values,
+            I = self.code_machine.states.size_binary_data,
+            L = self.code_machine.inputs.size_binary_data,
+            N = self.code_machine.exits.size_binary_data,
+            IQ = self.code_machine.states.string,
+            LX = self.code_machine.inputs.string,
+            NY = self.code_machine.exits.string
         )
 
 
@@ -60,6 +60,6 @@ fsm = FiniteStateMachine(
 )
 
 print(fsm)
-print(fsm.coding_machine.vectors.states)
-print(fsm.coding_machine.vectors.exits)
-print(fsm.coding_machine.vectors.inputs) 
+print(fsm.code_machine.states.values_bin)
+print(fsm.code_machine.exits.values_bin)
+print(fsm.code_machine.inputs.values_bin)
