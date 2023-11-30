@@ -5,14 +5,14 @@ class Vector:
     def __init__(self, elements: list[str], designation: str) -> None:
         self.designation = designation
         self.values = elements
-        self.size_binary_data = self.__get_vector_size(len(elements))
-        self.values_bin =  self.__get_vector_data(self.size_binary_data, elements)
+        self.size = self.__get_vector_size(len(elements))
+        self.binary_map =  self.__get_vector_data(self.size, elements)
     
     @property
     def string(self) -> str:
         return ''.join(map(
             lambda i: f"{self.designation}{i}",
-            range(1, self.size_binary_data + 1)
+            range(1, self.size + 1)
         ))
     
     @staticmethod

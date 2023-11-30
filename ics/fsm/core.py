@@ -35,9 +35,9 @@ class FiniteStateMachine:
             A = self.code_machine.states.values,
             W = self.code_machine.exits.values,
             Z = self.code_machine.inputs.values,
-            I = self.code_machine.states.size_binary_data,
-            L = self.code_machine.inputs.size_binary_data,
-            N = self.code_machine.exits.size_binary_data,
+            I = self.code_machine.states.size,
+            L = self.code_machine.inputs.size,
+            N = self.code_machine.exits.size,
             IQ = self.code_machine.states.string,
             LX = self.code_machine.inputs.string,
             NY = self.code_machine.exits.string
@@ -60,6 +60,6 @@ fsm = FiniteStateMachine(
 )
 
 print(fsm)
-print(fsm.code_machine.states.values_bin)
-print(fsm.code_machine.exits.values_bin)
-print(fsm.code_machine.inputs.values_bin)
+print(fsm.code_machine.states.binary_map)
+print(fsm.code_machine.exits.binary_map)
+print(fsm.code_machine.inputs.binary_map)
