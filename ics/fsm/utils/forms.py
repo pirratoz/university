@@ -6,3 +6,8 @@ fsm_str = \
 "I = log2 (A) = {I} ({IQ})\n" \
 "L = log2 (Z) = {L} ({LX})\n" \
 "N = log2 (W) = {N} ({NY})"
+
+tabel_str = \
+"H = {H}\n" \
+"A = {A}\n" \
+"Z = {Z}"
