@@ -2,7 +2,7 @@ from .forms import tabel_str
 
 
 class Tabel:
-    def __init__(self, headers: list[str], inputs: list[str], states: list[str]) -> None:
+    def __init__(self, headers: list[str], inputs: list[str], states: list[list[str]]) -> None:
         self.headers = headers
         self.inputs = inputs
         self.states = states
@@ -14,14 +14,17 @@ class Tabel:
             Z = self.inputs
         )
 
+    def __repr__(self) -> str:
+        return self.__str__()
+
 
 class StructuralMachine(Tabel):
     def __init__(
         self,
         headers: list[str],
         inputs: list[str],
-        states: list[str],
-        exits: list[str]
+        states: list[list[str]],
+        exits: list[list[str]]
     ) -> None:
         super().__init__(headers, inputs, states)
         self.exits = exits
@@ -30,11 +33,12 @@ class StructuralMachine(Tabel):
         return f"{super().__str__()}\nW = {self.exits}"
 
 
+
 class MemoryExcitation(Tabel):
     def __init__(
         self,
         headers: list[str],
         inputs: list[str],
-        states: list[str]
+        states: list[list[str]]
     ) -> None:
         super().__init__(headers, inputs, states)
