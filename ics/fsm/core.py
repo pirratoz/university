@@ -38,40 +38,13 @@ class FiniteStateMachine:
                     unique.append(element)
         return sorted(unique)
 
-    def get_structural_machine(self) -> tuple[list[str], list[str], list[str], list[str]]:
-        states = [ [] for _ in range(len(self.states)) ]
-        exits = [ [] for _ in range(len(self.exits))]
-        inputs = [self.code_machine.inputs.binary_map[input_] for input_ in self.inputs]
-        headers = [self.code_machine.states.binary_map[state_] for state_ in self.headers]
-        
-        for index, line_elements in enumerate(self.states):
-            states[index] = [
-                self.code_machine.states.binary_map[value]
-                for value in line_elements
-            ]
-        
-        for index, line_elements in enumerate(self.exits):
-            exits[index] = [
-                self.code_machine.exits.binary_map[value]
-                for value in line_elements
-            ]
-
-        return headers, inputs, states, exits
-
-    def get_memory_excitation_function(
-        self,
-        headers: list[str],
-        states: list[list[str]]
-    ) -> list[list[str]]:
-        memory_excitation = [ [] for _ in range(len(self.inputs)) ]
-        for index in range(len(self.inputs)):
-            for old_state, new_state in zip(headers, states[index]):
-                state_mem = "".join([
-                    self.trigger.get_new_condition(old_state[i], new_state[i])
-                    for i in range(len(old_state))
-                ])
-                memory_excitation[index].append(state_mem)
-        return memory_excitation
+    def update_tabels(self) -> None:
+        self.code_machine.update_models(
+            self.headers,
+            self.states,
+            self.exits,
+            self.trigger
+        )
 
     def __str__(self) -> str:
         return forms.fsm_str.format(
@@ -105,12 +78,7 @@ fsm = FiniteStateMachine(
     trigger=TriggerT()
 )
 
-print(fsm)
-print(fsm.code_machine.states.binary_map)
-print(fsm.code_machine.exits.binary_map)
-print(fsm.code_machine.inputs.binary_map)
+fsm.update_tabels()
 
-headers, inputs, states, exits = fsm.get_structural_machine()
-memory_function = fsm.get_memory_excitation_function(headers, states)
-
-print(memory_function)
+print(fsm.code_machine.tabel_structural)
+print(fsm.code_machine.tabel_memory)
