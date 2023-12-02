@@ -1,6 +1,7 @@
 from math import log2, ceil
 
 from utils.models import (
+    Tabel,
     StructuralMachine,
     MemoryExcitation
 )
@@ -106,3 +107,43 @@ class CodingMachine:
         self.tabel_memory.headers = headers
         self.tabel_memory.inputs = self.tabel_structural.inputs
         self.tabel_memory.states = memory_excitation
+
+    def __get_Carnot_state(self, vector_size: int) -> list[str]:
+        Q = ["" for _ in range(vector_size)]
+        for i in range(vector_size):
+            Q[i] = "0" * 2 ** i + "1" * 2 ** i
+        for i in range(0, vector_size - 1):
+            for _ in range(vector_size - (i + 1)):
+                Q[i] += Q[i][::-1]
+        return Q
+
+    def get_Carnot_map_for_exits(self) -> list[Tabel]:
+        q = self.__get_Carnot_state(self.states.size)
+        inputs = self.tabel_structural.inputs
+
+        tabels = []
+
+        for k in range(self.exits.size): 
+            headers = []
+            states = [
+                ["0" for i in range(2 ** self.states.size)]
+                for _ in range(len(self.tabel_structural.inputs))
+            ]
+            for i in range(2 ** self.states.size):
+                headers.append("".join([
+                    q[index][i]
+                    for index in range(self.states.size)
+                ]))
+            for i in range(len(inputs)):
+                for index in range(len(self.tabel_structural.headers)):
+                    q_pos = self.tabel_structural.headers[index]
+                    i_ = headers.index(q_pos)
+                    states[i][i_] = self.tabel_structural.exits[i][index][k]
+            tabels.append(Tabel(headers, inputs, states))
+        return tabels
+    
+    def get_Carnot_map_for_memory(self) -> list[Tabel]:
+        q = self.__get_Carnot_state(self.states.size)
+        inputs = self.tabel_structural.inputs
+        tabels = []
+        return tabels
