@@ -62,15 +62,15 @@ class FiniteStateMachine:
 
 fsm = FiniteStateMachine(
     headers = [
-        "a1", "a2", "a3", "a4"
+        "a1", "a2", "a3", "a4", "a5", "a6"
     ],
     states = [
-        ["a3", "a4", "a1", "a1"],
-        ["a4", "a1", "a2", "a3"]
+        ["a5", "a5", "a5", "a6", "a1", "a2"],
+        ["a6", "a6", "a6", "a3", "a4", "a5"]
     ],
     exits = [
-        ["w3", "w5", "w1", "w4"],
-        ["w5", "w2", "w1", "w3"]
+        ["w3", "w3", "w3", "w5", "w1", "w4"],
+        ["w5", "w5", "w5", "w2", "w1", "w3"]
     ],
     inputs = [
         "z1", "z2"
@@ -80,5 +80,6 @@ fsm = FiniteStateMachine(
 
 fsm.update_tabels()
 
-print(fsm.code_machine.tabel_structural)
-print(fsm.code_machine.tabel_memory)
+outputs = fsm.code_machine.get_Carnot_map_for_exits()
+
+print(outputs)
