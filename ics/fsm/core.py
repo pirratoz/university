@@ -25,12 +25,12 @@ class FiniteStateMachine:
         self.trigger = trigger
 
         self.code_machine = CodingMachine(
-            self.get_unique_value_from_list(self.states),
-            self.get_unique_value_from_list(self.exits),
+            self.get_unique_values_from_list(self.states),
+            self.get_unique_values_from_list(self.exits),
             self.inputs
         )
 
-    def get_unique_value_from_list(self, iter_: list[list[str]]) -> list[str]:
+    def get_unique_values_from_list(self, iter_: list[list[str]]) -> list[str]:
         unique = []
         for line_elements in iter_:
             for element in line_elements:
