@@ -8,6 +8,8 @@ fsm_str = \
 "N = log2 (W) = {N} ({NY})"
 
 tabel_str = \
-"H = {H}\n" \
-"A = {A}\n" \
-"Z = {Z}"
+"""[
+H={H}
+A={A}
+Z={Z}
+]"""
