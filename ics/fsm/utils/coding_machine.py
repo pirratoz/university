@@ -100,7 +100,7 @@ class CodingMachine:
         for index in range(len(self.inputs.values)):
             for old_state, new_state in zip(headers, states[index]):
                 state_mem = "".join([
-                    trigger.get_new_condition(old_state[i], new_state[i])
+                    trigger.get_new_state(old_state[i], new_state[i])
                     for i in range(len(old_state))
                 ])
                 memory_excitation[index].append(state_mem)
@@ -108,7 +108,7 @@ class CodingMachine:
         self.tabel_memory.inputs = self.tabel_structural.inputs
         self.tabel_memory.states = memory_excitation
 
-    def __get_Carnot_state(self, vector_size: int) -> list[str]:
+    def __get_Carnot_state_headers(self, vector_size: int) -> list[str]:
         Q = ["" for _ in range(vector_size)]
         for i in range(vector_size):
             Q[i] = "0" * 2 ** i + "1" * 2 ** i
@@ -116,24 +116,29 @@ class CodingMachine:
             for _ in range(vector_size - (i + 1)):
                 Q[i] += Q[i][::-1]
         return Q
-
-    def get_Carnot_map_for_exits(self) -> list[Tabel]:
-        q = self.__get_Carnot_state(self.states.size)
-        inputs = self.tabel_structural.inputs
-
-        tabels = []
-
-        for k in range(self.exits.size): 
-            headers = []
-            states = [
+    
+    def __get_default_value_machine(self) -> tuple[list[str], list[list[str]]]:
+        q = self.__get_Carnot_state_headers(self.states.size)
+        headers = []
+        states = [
                 ["0" for i in range(2 ** self.states.size)]
                 for _ in range(len(self.tabel_structural.inputs))
             ]
-            for i in range(2 ** self.states.size):
-                headers.append("".join([
-                    q[index][i]
-                    for index in range(self.states.size)
-                ]))
+        for i in range(2 ** self.states.size):
+            headers.append("".join([
+                q[index][i]
+                for index in range(self.states.size)
+            ]))
+        return headers, states
+
+    def get_Carnot_map_for_exits(self) -> list[Tabel]:
+        inputs = self.tabel_structural.inputs
+        tabels = []
+
+        for k in range(self.exits.size):
+            headers, states = self.__get_default_value_machine()
+            # Bypassing the machine through all data cells
+            # i - inputs; index - states;
             for i in range(len(inputs)):
                 for index in range(len(self.tabel_structural.headers)):
                     q_pos = self.tabel_structural.headers[index]
@@ -143,7 +148,18 @@ class CodingMachine:
         return tabels
     
     def get_Carnot_map_for_memory(self) -> list[Tabel]:
-        q = self.__get_Carnot_state(self.states.size)
         inputs = self.tabel_structural.inputs
         tabels = []
+
+        for k in range(len(self.tabel_memory.states[0][0])): 
+            headers, states = self.__get_default_value_machine()
+            # Bypassing the machine through all data cells
+            # i - inputs; index - states;
+            for i in range(len(inputs)):
+                for index in range(len(self.tabel_structural.headers)):
+                    q_pos = self.tabel_structural.headers[index]
+                    i_ = headers.index(q_pos)
+                    states[i][i_] = self.tabel_memory.states[i][index][k]
+            tabels.append(Tabel(headers, inputs, states))
+
         return tabels
