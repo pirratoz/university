@@ -20,6 +20,7 @@ fsm = Machine(
     trigger=TriggerJK()
 )
 
+print(fsm.machine)
 print(fsm.structural_machine)
 print(fsm.memory_machine)
 
