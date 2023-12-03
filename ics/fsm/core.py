@@ -75,11 +75,12 @@ fsm = FiniteStateMachine(
     inputs = [
         "z1", "z2"
     ],
-    trigger=TriggerT()
+    trigger=TriggerJK()
 )
 
 fsm.update_tabels()
-
+print(fsm.code_machine.tabel_memory)
 outputs = fsm.code_machine.get_Carnot_map_for_exits()
+memory_outputs = fsm.code_machine.get_Carnot_map_for_memory()
 
-print(outputs)
+print(memory_outputs)
