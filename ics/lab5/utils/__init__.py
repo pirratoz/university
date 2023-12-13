@@ -1,8 +1,8 @@
 from .code_gray import get_code_gray
-from .fill_zero import fill_zero_states
+from .fill_undefined_states import fill_undefined_states
 
 
 __all__ = [
     "get_code_gray",
-    "fill_zero_states"
+    "fill_undefined_states"
 ]

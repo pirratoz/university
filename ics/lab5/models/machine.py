@@ -6,7 +6,7 @@ from .memory_machine import MemoryMachine
 from .triggers import Trigger
 from utils import (
     get_code_gray,
-    fill_zero_states
+    fill_undefined_states
 )
 
 
@@ -35,7 +35,7 @@ class Machine:
             fsm = deepcopy(self.structural_machine)
             fsm.headers = headers
             fsm.exits = []
-            fill_zero_states(fsm)
+            fill_undefined_states(fsm)
 
             for current_index, value_header in enumerate(vector_headers):
                 index_header_map = fsm.headers.index(value_header)
