@@ -1,7 +1,7 @@
 from math import log2
 
 from .func import TabelFunction
-from .row_generator import RowGenerator
+from .placeholder import RowPlaceholder
 from .gluing_algorithm import GluingAlgorithm
 from .mx_models import (
     InputHashMap,
@@ -10,7 +10,7 @@ from .mx_models import (
 
 
 class Multiplexor:
-    def __init__(self, count_input: MultiplexorCountInput, row_generator: RowGenerator) -> None:
+    def __init__(self, count_input: MultiplexorCountInput, row_generator: RowPlaceholder) -> None:
         self.count_input: int = count_input.value
         self.row_generator = row_generator
         self.tabel = TabelFunction([])

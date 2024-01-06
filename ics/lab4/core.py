@@ -4,21 +4,21 @@ from utils import (
     Bool,
     Multiplexor,
     MultiplexorCountInput,
-    FillFinishedResult,
-    CalculationsResult
+    ReadyResultsPlaceholder,
+    CalculatedResultsPlaceholder
 )
 
 
 # This is an example of equivalent multiplexers
 
 # One is set using the function results
-ready_results = FillFinishedResult(
+ready_results = ReadyResultsPlaceholder(
     count_var=5,
     results=[0, 1, 2, 3, 4, 6, 7, 12, 16, 18, 20, 22, 28],
     bool=Bool.true
 )
 # The other is set by the function itself
-calculations_results = CalculationsResult(
+calculations_results = CalculatedResultsPlaceholder(
     function="!a * !b * !c + c * !d * !e + a * !b * !e + !a * !b * d"
 )
 

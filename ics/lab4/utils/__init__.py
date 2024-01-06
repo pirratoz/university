@@ -4,9 +4,9 @@ from .func import (
     TabelRow
 )
 
-from .row_generator import (
-    FillFinishedResult,
-    CalculationsResult
+from .placeholder import (
+    ReadyResultsPlaceholder,
+    CalculatedResultsPlaceholder
 )
 
 from .multiplexor import (
@@ -20,8 +20,8 @@ __all__ = [
     "Bool",
     "TabelFunction",
     "TabelRow",
-    "FillFinishedResult",
-    "CalculationsResult",
+    "ReadyResultsPlaceholder",
+    "CalculatedResultsPlaceholder",
     "InputHashMap",
     "MultiplexorCountInput",
     "Multiplexor"

@@ -12,12 +12,12 @@ class FunctionIsNotValid(Exception):
     ...
 
 
-class RowGenerator:
+class RowPlaceholder:
     def fill_rows(self, tabel: TabelFunction) -> None:
         ...
 
 
-class FillFinishedResult(RowGenerator):
+class ReadyResultsPlaceholder(RowPlaceholder):
 
     def __init__(self, count_var: int, results: list[int], bool: Bool) -> None:
         self.count_var = count_var
@@ -35,7 +35,7 @@ class FillFinishedResult(RowGenerator):
             )
 
 
-class CalculationsResult(RowGenerator):
+class CalculatedResultsPlaceholder(RowPlaceholder):
     def __init__(self, function: str) -> None:
         self.count_var: int = 0
         self.function: str = function
