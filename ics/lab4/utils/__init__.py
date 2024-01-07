@@ -6,7 +6,8 @@ from .func import (
 
 from .placeholder import (
     ReadyResultsPlaceholder,
-    CalculatedResultsPlaceholder
+    CalculatedResultsPlaceholder,
+    RowPlaceholder
 )
 
 from .multiplexor import (
@@ -23,6 +24,7 @@ __all__ = [
     "ReadyResultsPlaceholder",
     "CalculatedResultsPlaceholder",
     "InputHashMap",
+    "RowPlaceholder",
     "MultiplexorCountInput",
     "Multiplexor"
 ]
