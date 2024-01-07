@@ -43,3 +43,36 @@ variants: list[list[RowPlaceholder]] = [
         )
     ],
 ]
+
+# 22, 25, 30
+additional_variants: list[RowPlaceholder] = [
+    ReadyResultsPlaceholder(
+        count_var=4,
+        results=[0, 3, 7, 8, 10, 11, 12, 14],
+        bool=Bool.true
+    ),
+    ReadyResultsPlaceholder(
+        count_var=4,
+        results=[0, 3, 5, 6, 7, 11, 13, 15],
+        bool=Bool.true
+    ),
+    ReadyResultsPlaceholder(
+        count_var=4,
+        results=[1, 4, 8, 10, 12, 14, 15],
+        bool=Bool.true
+    ),
+]
+
+
+# 22, 25, 30
+additional_variants_func: list[RowPlaceholder] = [
+    CalculatedResultsPlaceholder(
+        function="(a + !b) * (!b + c) * (!a + c)"
+    ),
+    CalculatedResultsPlaceholder(
+        function="(a + b) * (!a + !c) * (b + !c)"
+    ),
+    CalculatedResultsPlaceholder(
+        function="(!b + c) * (!a + b) * (a + !c)"
+    ),
+]
