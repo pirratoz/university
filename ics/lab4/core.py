@@ -24,17 +24,17 @@ calculations_results = CalculatedResultsPlaceholder(
 
 mx = Multiplexor(
     count_input=MultiplexorCountInput.four,
-    row_generator=ready_results
+    row_placeholder=ready_results
 )
 
 first = mx.inputs.dump()
-mx.row_generator = calculations_results
+mx.row_placeholder = calculations_results
 second = mx.inputs.dump()
 
-print("========================================")
-print("MX: Based on the results of the function", first)
-print("========================================")
-print("MX: By function", second)
+print("========================================", "MX: Based on the results of the function", sep="\n")
+pprint(first, sort_dicts=False)
+print("========================================", "MX: By function", sep="\n")
+pprint(second, sort_dicts=False)
 print("========================================")
 print("Results equals: ", first == second)
 

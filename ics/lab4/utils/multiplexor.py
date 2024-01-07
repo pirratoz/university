@@ -13,9 +13,9 @@ from .mx_models import (
 
 
 class Multiplexor:
-    def __init__(self, count_input: MultiplexorCountInput, row_generator: RowPlaceholder) -> None:
+    def __init__(self, count_input: MultiplexorCountInput, row_placeholder: RowPlaceholder) -> None:
         self.count_input: int = count_input.value
-        self.row_generator = row_generator
+        self.row_placeholder = row_placeholder
         self.tabel = TabelFunction([])
         self.sign: bool = False
 
@@ -45,5 +45,5 @@ class Multiplexor:
     @property
     def inputs(self) -> InputHashMap:
         self.tabel = TabelFunction([])
-        self.row_generator.fill_rows(self.tabel)
+        self.row_placeholder.fill_rows(self.tabel)
         return self.__get_inputs()
