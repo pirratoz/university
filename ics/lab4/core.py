@@ -6,11 +6,15 @@ from utils import (
     RowPlaceholder
 )
 
-from variants import variants
+from variants import (
+    variants,
+    additional_variants,
+    additional_variants_func
+)
 
 
 mx = Multiplexor(
-    count_input=MultiplexorCountInput.four,
+    count_input=MultiplexorCountInput.eight,
     row_placeholder=RowPlaceholder()
 )
 
@@ -25,6 +29,23 @@ for ready_result, calculation_result in variants:
     pprint(second, sort_dicts=False)
     print("========================================")
     print("Results equals: ", first == second, "\n\n")
+
+
+for placeholder in additional_variants:
+    mx.row_placeholder = placeholder
+    first = mx.inputs.dump()
+    print("========================================", "MX: Based on the results of the function", sep="\n")
+    pprint(first, sort_dicts=False)
+    print("========================================")
+
+
+for placeholder in additional_variants_func:
+    mx.row_placeholder = placeholder
+    first = mx.inputs.dump()
+    print("========================================", "MX: By function", sep="\n")
+    pprint(first, sort_dicts=False)
+    print("========================================")
+
 
 # Attention!! 
 
