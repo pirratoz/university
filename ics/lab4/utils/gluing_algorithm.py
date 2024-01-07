@@ -83,16 +83,16 @@ class GluingAlgorithm:
     def __identify_glue(self, correct_result: list[list[str]], wrong_result: list[list[str]]):
         unit_results: list[str] = []
         zero_results: list[str] = []
-
         # select equivalent symbols in the gluing taking into account the result
         for i in range(0, self.mx.count_var - self.mx.count_addresses):
-            local_unit: set[str] = set(map(lambda chars: chars[i], correct_result))
-            local_zero: set[str] = set(map(lambda chars: chars[i], wrong_result))
-            if len(local_unit) == 1:
-                unit_results.append(local_unit.pop())
-            if len(local_zero) == 1:
-                zero_results.append(local_zero.pop())
-        
+            local_unit: list[str] = list(set(map(lambda chars: chars[i], correct_result)))
+            local_zero: list[str] = list(set(map(lambda chars: chars[i], wrong_result)))
+            # the variable should also not be included in two lists at once
+            if len(local_unit) == 1 and local_unit[0] not in local_zero:
+                unit_results.append(local_unit[0])
+            if len(local_zero) == 1 and local_zero[0] not in local_unit:
+                zero_results.append(local_zero[0])
+
         sign = ["", " * "][self.sign]
         concat = sign.join
 
@@ -105,5 +105,16 @@ class GluingAlgorithm:
             unit_r = " + ".join(map(concat, correct_result))
         if len(zero_results) == 0:
             zero_r = " + ".join(map(concat, wrong_result))
+        
+        # answers, if there are 2 correct answers in total and they differ in 1 variable
+        cr, wr = correct_result, wrong_result
+        if len(unit_results) == 0 and len(correct_result) == 2:
+                unit_r = "".join([
+                    cr[0][i] for i in range(len(cr[0])) if cr[0][i] == cr[1][i]
+                ])
+        if len(wrong_result) == 0 and len(wrong_result) == 2:
+            zero_r = "".join([
+                wr[0][i] for i in range(len(wr[0])) if wr[0][i] == wr[1][i]
+            ])
         
         return unit_r, f"!({zero_r})"
