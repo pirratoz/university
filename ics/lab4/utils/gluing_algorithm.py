@@ -1,10 +1,7 @@
 from typing import Iterator
 from dataclasses import dataclass
 
-from .func import (
-    TabelFunction,
-    TabelRow
-)
+from .func import TabelFunction
 from .mx_models import MultiplexorResultInput
 
 
@@ -79,10 +76,28 @@ class GluingAlgorithm:
                 wrong_result
             ) 
         return MultiplexorResultInput(zero_r, unit_r)
+
+    def __check_big_glue(self, items: list[list[str]], max_var: int) -> list[list[str]]:
+        new_items = []
+        for var in set(map(lambda v: v[0], items)):
+            indexs = []
+            for index, vars in enumerate(items):
+                if var in vars:
+                    indexs.append(index)
+            indexs.reverse()
+            if len(indexs) == max_var:
+                new_items.append([var])
+                list(map(items.pop, indexs))
+            else:
+                list(map(lambda index: new_items.append(items.pop(index)), indexs))
+        return new_items
     
-    def __identify_glue(self, correct_result: list[list[str]], wrong_result: list[list[str]]):
+    def __identify_glue(self, correct_result: list[list[str]], wrong_result: list[list[str]]) -> tuple[str, str]:
         unit_results: list[str] = []
         zero_results: list[str] = []
+
+        max_var = int((len(correct_result) + len(wrong_result)) / 2)
+
         # select equivalent symbols in the gluing taking into account the result
         for i in range(0, self.mx.count_var - self.mx.count_addresses):
             local_unit: list[str] = list(set(map(lambda chars: chars[i], correct_result)))
@@ -92,7 +107,11 @@ class GluingAlgorithm:
                 unit_results.append(local_unit[0])
             if len(local_zero) == 1 and local_zero[0] not in local_unit:
                 zero_results.append(local_zero[0])
+        correct_result = self.__check_big_glue(correct_result, max_var)
+        wrong_result = self.__check_big_glue(wrong_result, max_var)
+        return self.__generate_answer(unit_results, zero_results, correct_result, wrong_result)
 
+    def __generate_answer(self, unit_results, zero_results, correct_result, wrong_result) -> tuple[str, str]:
         sign = ["", " * "][self.sign]
         concat = sign.join
 
@@ -108,13 +127,12 @@ class GluingAlgorithm:
         
         # answers, if there are 2 correct answers in total and they differ in 1 variable
         cr, wr = correct_result, wrong_result
-        if len(unit_results) == 0 and len(correct_result) == 2:
-                unit_r = "".join([
-                    cr[0][i] for i in range(len(cr[0])) if cr[0][i] == cr[1][i]
-                ])
-        if len(wrong_result) == 0 and len(wrong_result) == 2:
-            zero_r = "".join([
-                wr[0][i] for i in range(len(wr[0])) if wr[0][i] == wr[1][i]
-            ])
-        
+        if len(unit_results) == 0 and len(correct_result) == 2 and all([len(cr[0]) == len(l) for l in cr]):
+            chars = [cr[0][i] for i in range(len(cr[0])) if cr[0][i] == cr[1][i]]
+            if any(chars):
+                unit_r = "".join(chars)
+        if len(wrong_result) == 0 and len(wrong_result) == 2 and all([len(wr[0]) == len(l) for l in wr]):
+            chars = [wr[0][i] for i in range(len(wr[0])) if wr[0][i] == wr[1][i]]
+            if any(chars):
+                zero_r = "".join(chars)
         return unit_r, f"!({zero_r})"
