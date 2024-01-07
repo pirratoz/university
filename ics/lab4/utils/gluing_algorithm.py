@@ -81,7 +81,8 @@ class GluingAlgorithm:
         return MultiplexorResultInput(zero_r, unit_r)
     
     def __identify_glue(self, correct_result: list[list[str]], wrong_result: list[list[str]]):
-        unit_results, zero_results = [], []
+        unit_results: list[str] = []
+        zero_results: list[str] = []
 
         # select equivalent symbols in the gluing taking into account the result
         for i in range(0, self.mx.count_var - self.mx.count_addresses):
@@ -93,15 +94,16 @@ class GluingAlgorithm:
                 zero_results.append(local_zero.pop())
         
         sign = ["", " * "][self.sign]
+        concat = sign.join
 
         # default answers
-        zero_r = sign.join(zero_results)
-        unit_r = sign.join(unit_results)
+        zero_r = concat(zero_results)
+        unit_r = concat(unit_results)
 
         # answers if we cannot minimize gluing as much as possible
         if len(unit_results) == 0:
-            unit_r = " + ".join([sign.join(j) for j in correct_result])
+            unit_r = " + ".join(map(concat, correct_result))
         if len(zero_results) == 0:
-            zero_r = " + ".join([sign.join(j) for j in wrong_result])
+            zero_r = " + ".join(map(concat, wrong_result))
         
         return unit_r, f"!({zero_r})"
