@@ -33,7 +33,7 @@ class GluingAlgorithm:
     def for_equivalent_size(self) -> Iterator[tuple[int, MultiplexorResultInput]]:
         for index_row in range(0, self.mx.count_row, self.mx.glue_size):
             value = self.__row_result(index_row)
-            result = MultiplexorResultInput(f"{value}", f"!{1 if value else 0}")
+            result = MultiplexorResultInput(f"!{0 if value else 1}", f"{value}")
             yield index_row, result
 
     def for_smaller_size(self) -> Iterator[tuple[int, MultiplexorResultInput]]:
