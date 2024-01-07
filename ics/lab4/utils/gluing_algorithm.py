@@ -1,57 +1,90 @@
-from .func import TabelFunction
+from typing import Iterator
+from dataclasses import dataclass
 
+from .func import (
+    TabelFunction,
+    TabelRow
+)
 from .mx_models import MultiplexorResultInput
 
 
+@dataclass(frozen=True)
+class MxData:
+    glue_size: int
+    count_addresses: int
+    count_row: int
+    count_used_row: int
+    count_var: int
+
+
+@dataclass
+class FunctionData:
+    result: int
+    vars: list[str]
+
+
 class GluingAlgorithm:
-    def __init__(self, tabel: TabelFunction) -> None:
+    def __init__(self, tabel: TabelFunction, data: MxData, sign: bool = False) -> None:
         self.tabel = tabel
-        self.mx_glue = []
+        self.gluing: list[FunctionData] = []
+        self.mx = data
+        self.sign: bool = sign
 
-    def generate_glue(self, index_row: int, glue_size: int, count_row: int, count_used_row: int) -> list:
-        self.mx_glue = []
-        for index_v in range(index_row, index_row + glue_size):
-            if count_row == count_used_row:
-                self.mx_glue.append(self.tabel.rows[index_v].result.value)
-            else:
-                self.mx_glue.append([self.tabel.rows[index_v].result.value, self.tabel.rows[index_v].get_string_vars])
-        return self.mx_glue
+    def for_equivalent_size(self) -> Iterator[tuple[int, MultiplexorResultInput]]:
+        for index_row in range(0, self.mx.count_row, self.mx.glue_size):
+            value = self.__row_result(index_row)
+            result = MultiplexorResultInput(f"{value}", f"!{1 if value else 0}")
+            yield index_row, result
+
+    def for_smaller_size(self) -> Iterator[tuple[int, MultiplexorResultInput]]:
+        for index_row in range(0, self.mx.count_row, self.mx.glue_size):
+            index_glue = index_row // self.mx.glue_size
+            self.__generate_glue(index_row)
+            result = self.__address_smaller_var()
+            yield index_glue, result
+
+    def __generate_glue(self, index_row: int) -> None:
+        self.gluing = [
+            FunctionData(self.__row_result(index), self.__row_vars(index))
+            for index in range(index_row, index_row + self.mx.glue_size)
+        ]
     
-    def address_equals_var(self) -> MultiplexorResultInput:
-        return MultiplexorResultInput(
-            result_one=f"{self.mx_glue[0]}",
-            result_zero=f"!{1 if self.mx_glue[0] else 0}"
-        )
+    def __row_result(self, index: int) ->  int:
+        return self.tabel.rows[index].result.value
 
-    def address_smaller_var(self, count_addresses: int, count_var: int) -> MultiplexorResultInput:
-        correct_result, wrong_result = [], []
+    def __row_vars(self, index: int) ->  list[str]:
+        return self.tabel.rows[index].get_string_vars
+
+    def __address_smaller_var(self) -> MultiplexorResultInput:
+        correct_result: list[list[str]] = []
+        wrong_result: list[list[str]] = []
         unit_r, zero_r = "", ""
 
         # We divide the results with one and zero into 2 heaps
-        for i in self.mx_glue:
-            (correct_result if i[0] == 1 else wrong_result).append(i[1][count_addresses::])
+        for part_glue in self.gluing:
+            current_list = wrong_result if part_glue.result == 0 else correct_result
+            vars = part_glue.vars[self.mx.count_addresses::]
+            current_list.append(vars)
 
-        if all([i[0] == 0 for i in self.mx_glue]):
+        if all([i.result == 0 for i in self.gluing]):
             # all glue is zero
-            unit_r, zero_r = "0", "!1"
-        elif all([i[0] == 1 for i in self.mx_glue]):
+            unit_r, zero_r = "0", "!(1)"
+        elif all([i.result == 1 for i in self.gluing]):
             # all glue is one
-            unit_r, zero_r = "1", "!0"
+            unit_r, zero_r = "1", "!(0)"
         else:
             # glue with random results
             unit_r, zero_r = self.__identify_glue(
-                count_addresses,
-                count_var,
                 correct_result,
                 wrong_result
             ) 
         return MultiplexorResultInput(zero_r, unit_r)
     
-    def __identify_glue(self, count_addresses: int, count_var: int, correct_result: list, wrong_result: list):
+    def __identify_glue(self, correct_result: list[list[str]], wrong_result: list[list[str]]):
         unit_results, zero_results = [], []
 
         # select equivalent symbols in the gluing taking into account the result
-        for i in range(0, count_var - count_addresses):
+        for i in range(0, self.mx.count_var - self.mx.count_addresses):
             local_unit: set[str] = set(map(lambda chars: chars[i], correct_result))
             local_zero: set[str] = set(map(lambda chars: chars[i], wrong_result))
             if len(local_unit) == 1:
@@ -59,16 +92,16 @@ class GluingAlgorithm:
             if len(local_zero) == 1:
                 zero_results.append(local_zero.pop())
         
+        sign = ["", " * "][self.sign]
+
         # default answers
-        zero_r = f"!({' * '.join(zero_results)})"
-        unit_r = ' * '.join(unit_results)
+        zero_r = sign.join(zero_results)
+        unit_r = sign.join(unit_results)
 
         # answers if we cannot minimize gluing as much as possible
         if len(unit_results) == 0:
-            unit_results = [" * ".join(j) for j in correct_result]
-            unit_r = ' + '.join(unit_results)
+            unit_r = " + ".join([sign.join(j) for j in correct_result])
         if len(zero_results) == 0:
-            zero_results = [" * ".join(j) for j in wrong_result]
-            zero_r = f"!({' + '.join(zero_results)})"
+            zero_r = " + ".join([sign.join(j) for j in wrong_result])
         
-        return unit_r, zero_r
+        return unit_r, f"!({zero_r})"
