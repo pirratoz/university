@@ -27,11 +27,21 @@ mx = Multiplexor(
     row_generator=ready_results
 )
 
-print("========================================")
-print("MX: Based on the results of the function")
-pprint(mx.inputs.dump())
-print("========================================")
+first = mx.inputs.dump()
 mx.row_generator = calculations_results
-print("MX: By function")
-pprint(mx.inputs.dump())
+second = mx.inputs.dump()
+
 print("========================================")
+print("MX: Based on the results of the function", first)
+print("========================================")
+print("MX: By function", second)
+print("========================================")
+print("Results equals: ", first == second)
+
+# Attention!! 
+
+# mx.sign = False   // default
+# first = mx.inputs.dump()
+# mx.sign = True
+# second = mx.inputs.dump()
+# first != second
