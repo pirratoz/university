@@ -52,14 +52,12 @@ class GluingAlgorithm:
 
         # select equivalent symbols in the gluing taking into account the result
         for i in range(0, count_var - count_addresses):
-            correct_results = [j[i] for j in correct_result]
-            wrong_results = [j[i] for j in wrong_result]
-
-            # all value chars equal, then VALUE - is minimized char
-            if all([correct_results[0] == v for v in correct_results]):
-                unit_results.append(correct_results[0])
-            if all([wrong_results[0] == v for v in wrong_results]):
-                zero_results.append(wrong_results[0])
+            local_unit: set[str] = set(map(lambda chars: chars[i], correct_result))
+            local_zero: set[str] = set(map(lambda chars: chars[i], wrong_result))
+            if len(local_unit) == 1:
+                unit_results.append(local_unit.pop())
+            if len(local_zero) == 1:
+                zero_results.append(local_zero.pop())
         
         # default answers
         zero_r = f"!({' * '.join(zero_results)})"
