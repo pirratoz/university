@@ -2,7 +2,10 @@ from math import log2
 
 from .func import TabelFunction
 from .placeholder import RowPlaceholder
-from .gluing_algorithm import GluingAlgorithm
+from .gluing_algorithm import (
+    MxData,
+    GluingAlgorithm
+)
 from .mx_models import (
     InputHashMap,
     MultiplexorCountInput
@@ -14,31 +17,29 @@ class Multiplexor:
         self.count_input: int = count_input.value
         self.row_generator = row_generator
         self.tabel = TabelFunction([])
-    
+        self.sign: bool = False
+
     def __get_inputs(self) -> InputHashMap:
         map = InputHashMap()
 
-        GLUE_SIZE = int(len(self.tabel.rows) / self.count_input)
-        COUNT_ADDRESSES = int(log2(self.count_input))
-        COUNT_ROW = len(self.tabel.rows)
-        COUNT_USED_ROW = 2 ** COUNT_ADDRESSES
-        COUNT_VAR = len(self.tabel.rows[0].variables)
+        data = MxData(
+            int(len(self.tabel.rows) / self.count_input),
+            int(log2(self.count_input)),
+            len(self.tabel.rows),
+            2 ** int(log2(self.count_input)),
+            len(self.tabel.rows[0].variables)
+        )
 
-        algorithm = GluingAlgorithm(self.tabel)
+        algorithm = GluingAlgorithm(self.tabel, data, self.sign)
 
-        for INDEX_ROW in range(0, COUNT_ROW, GLUE_SIZE):
-            INDEX_GLUE = INDEX_ROW // GLUE_SIZE
+        iter_algorithm = algorithm.for_smaller_size
 
-            algorithm.generate_glue(
-                INDEX_ROW, GLUE_SIZE, COUNT_ROW, COUNT_USED_ROW
-            )
+        if data.count_row == data.count_used_row:
+            iter_algorithm = algorithm.for_equivalent_size
 
-            if COUNT_ROW == COUNT_USED_ROW:
-                # count adresses equal count var
-                map[f"X{INDEX_ROW}"] = algorithm.address_equals_var()
-            else:
-                # count adersses smaller then var
-                map[f"X{INDEX_GLUE}"] = algorithm.address_smaller_var(COUNT_ADDRESSES, COUNT_VAR)
+        for index, result in iter_algorithm():
+            map[f"X{index}"] = result
+
         return map
 
     @property
